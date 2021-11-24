@@ -3,7 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ProcessJsonService } from './services/process-json.service';
 import { StoryBoardComponent } from './story-board/story-board.component';
+import { NgApexchartsModule } from "ng-apexcharts";
+import { TransformData } from './common/transform-data';
+import { Utility } from './common/utility';
 
 @NgModule({
   declarations: [
@@ -12,9 +16,10 @@ import { StoryBoardComponent } from './story-board/story-board.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgApexchartsModule
   ],
-  providers: [],
+  providers: [ProcessJsonService, TransformData, Utility],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
