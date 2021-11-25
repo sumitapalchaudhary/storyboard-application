@@ -1,13 +1,13 @@
 import { DatePipe } from "@angular/common";
 import { Injectable } from "@angular/core";
-import { Data } from "@angular/router";
-import { ChartDto, StoryBoardDto } from "../models/story-board.model";
+import { StoryBoardDto } from "../models/story-board.model";
 import { ProcessJsonService } from "../services/process-json.service";
 import { Utility } from "./utility";
 
 @Injectable()
 export class TransformData{
 chartDataList: StoryBoardDto[] = [];
+listOfLabels: string[] = ['EVA', 'Roadmap', 'revenue', 'Quality', 'Content-Editing', 'Frontend', 'Maintenance', 'Servers', 'Callcenter', 'Backend', 'CAI', 'Bugs'];
     constructor(
         private processJsonService: ProcessJsonService,
         private utility: Utility,
@@ -21,7 +21,7 @@ chartDataList: StoryBoardDto[] = [];
             let fields: any = issue['fields'];
             let issuetype = fields['issuetype'];
 
-            chartData.timeestimate = this.getTimeEstimate(fields);
+            chartData.timeestimate = this.utility.getTimeEstimate(fields);
             if(chartData.timeestimate != null){
                 chartData.id = issue['id'];
                 chartData.key = issue['key'];
@@ -36,21 +36,9 @@ chartDataList: StoryBoardDto[] = [];
         });
     }
 
-    getTimeEstimate(inputFields: any): any{
-        let timeEstimate: any = null;
-        if(inputFields['timeestimate'] != null){
-            timeEstimate = inputFields['timeestimate'];
-        }
-        else if(inputFields['timeoriginalestimate'] != null){
-            timeEstimate = inputFields['timeoriginalestimate'];
-        }
-        else if(inputFields['aggregatetimeoriginalestimate'] != null){
-            timeEstimate = inputFields['aggregatetimeoriginalestimate'];
-        }
-        return timeEstimate;
-    }
+    
 
-    prepareChartDataDictionary(): any {
+    prepareChartDataDictionary(): { [key: string]: StoryBoardDto[] } {
         let chartDataDict: { [key: string]: StoryBoardDto[] } = {};
         this.transformArraytoStoryBoardData();
         this.chartDataList.forEach(cData => {
@@ -70,35 +58,28 @@ chartDataList: StoryBoardDto[] = [];
 
     prepareChartData(): any[]{
         let chartDataDict: { [key: string]: StoryBoardDto[] } = this.prepareChartDataDictionary();
-        let chartDataArray: ChartDto[] = [];
         let seriesData: any[] = [];        
         //let labelKeys: string[] = Object.keys(chartDataDict);
         
         for(var label in chartDataDict){
             let storyBoardData: StoryBoardDto[] = chartDataDict[label];
             storyBoardData.forEach(sb => {
-                let chartData: ChartDto = new ChartDto();
-                let dateArray: Date[] = [sb.startdate, sb.duedate];
-                chartData.x = label;
-                chartData.y = dateArray;
-                chartData.fillColor = this.setColor(label);
-                chartDataArray.push(chartData);
-                if (label == "Roadmap")
+                if (label == "Roadmap" || label == "Frontend" || label == "Servers")
                 {
                     seriesData.push({
-                    'x': chartData.x,
+                    'x': label,
                     'y': [
                         sb.startdate.getTime(),
                         sb.duedate.getTime()
                     ],
-                    'fillColor': chartData.fillColor,
+                    'fillColor': this.utility.setColor(label),
                     'id': sb.id,
                     'key': sb.key,
                     'issuetypename': sb.issuetypename,
                     'labels': this.utility.convertArrayToString(sb.labels),
                     'startdate': this.datepipe.transform(sb.startdate, "dd-MM-yyyy"),
                     'duedate': this.datepipe.transform(sb.duedate, "dd-MM-yyyy"),
-                    'timeestimate': sb.timeestimate,
+                    'timeestimate': this.utility.calculateDaysFromWeeks(sb.timeestimate) + " days",
                     'summary': sb.summary,
                     'description': sb.description
                 });
@@ -106,49 +87,5 @@ chartDataList: StoryBoardDto[] = [];
             });
         }
         return seriesData;
-    }
-
-    setColor(label: string): string{
-        switch(label){
-            case "EVA":
-                return "#008FFB";
-                break;
-            case "Roadmap":
-                return "#00E396";
-                break;
-            case "revenue":
-                return "#775DD0";
-                break;
-            case "Quality":
-                return "#FEB019";
-                break;
-            case "Content-Editing":
-                return "#FF4560";
-                break;
-            case "Frontend":
-                return "#008FFB";
-                break;
-            case "Maintenance":
-                return "#00E396";
-                break;
-            case "Servers":
-                return "#775DD0";
-                break;
-            case "Callcenter":
-                return "#FEB019";
-                break;
-            case "Backend":
-                return "#FF4560";
-                break;
-            case "CAI":
-                return "#008FFB";
-                break;
-            case "Bugs":
-                return "#00E396";
-                break;
-            default:
-                return "#775DD0";
-                break;
-        }
     }
 }
