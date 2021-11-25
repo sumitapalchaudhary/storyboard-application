@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ProcessJsonService } from '../services/process-json.service';
-import moment from "moment";
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 
 import {
   ChartComponent,
@@ -14,6 +14,7 @@ import {
   ApexGrid
 } from "ng-apexcharts";
 import { TransformData } from '../common/transform-data';
+import { StoryBoardDialogComponent } from '../story-board-dialog/story-board-dialog.component';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -37,18 +38,15 @@ export class StoryBoardComponent implements OnInit {
   public chartOptions!: Partial<ChartOptions> | any;
   
   constructor(
-    private processJsonService: ProcessJsonService,
-    private transformData: TransformData
+    private transformData: TransformData,
+    public dialog: MatDialog
   ){}
 
   ngOnInit(): void {
-    //this.transformData.prepareChartData();
     this.constructChart();
   }
 
   constructChart() {
-    let labels = this.transformData.prepareChartData().map((d) => d.x);
-    console.log(labels);
     this.chartOptions = {
       series: [
         {
@@ -60,6 +58,27 @@ export class StoryBoardComponent implements OnInit {
         type: "rangeBar",
         toolbar: {
           show: false
+        },
+        events: {
+          dataPointMouseEnter: function(event: any) {
+            event.path[0].style.cursor = "pointer";
+          },
+          dataPointSelection: (event: any, chartContext: any, config: any) => {
+            console.log(config);
+            const seriesIndex = config.seriesIndex;
+            const dataPointIndex = config.dataPointIndex;
+            let strArray = [];
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].id);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].key);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].issuetypename);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].labels);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].startdate);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].duedate);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].timeestimate);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].summary);
+            strArray.push(config.w.config.series[seriesIndex].data[dataPointIndex].description);
+            this.openDialog(strArray);
+          }
         }
       },
       plotOptions: {
@@ -74,13 +93,8 @@ export class StoryBoardComponent implements OnInit {
       dataLabels: {
         enabled: true,
         formatter: function(val: any, opts: any) {
-          console.log(opts);
           var label = opts.w.config.series[0].data[opts.dataPointIndex].key;
-          console.log(label);
-          var a = moment(val[0]);
-          var b = moment(val[1]);
-          var diff = b.diff(a, "days");
-          return label; //+ ": " + diff + (diff > 1 ? " days" : " day");
+          return label;
         },
         style: {
           colors: ["#f3f4f5", "#fff"]
@@ -99,6 +113,17 @@ export class StoryBoardComponent implements OnInit {
         }
       }
     };
+  }
+
+  openDialog(data: any){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      item: data
+  };
+    const dialogRef = this.dialog.open(StoryBoardDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 }
 

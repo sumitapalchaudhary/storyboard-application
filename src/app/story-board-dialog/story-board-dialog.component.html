@@ -1,0 +1,17 @@
+<h6 mat-dialog-title>Story Details: {{item[1]}}</h6><hr class="hrcss">
+<mat-dialog-content>
+    <div class="example-container">
+        <span><b>ID</b> : {{item[0]}}</span><br>
+        <span><b>Key</b> : {{item[1]}}</span><br>
+        <span><b>Issue type name</b> : {{item[2]}}</span><br>
+        <span><b>Labels</b> : {{item[3]}}</span><br>
+        <span><b>Start date</b> : {{item[4]}}</span><br>
+        <span><b>Due date</b> : {{item[5]}}</span><br>
+        <span><b>Estimation</b> : {{item[6]}}</span><br>
+        <span style="display:inline-block; overflow-wrap: break-word"><b>Summary</b> : {{item[7]}}</span><br>
+        <span style="display:inline-block; overflow-wrap: break-word"><b>Description</b> : {{item[8]}}</span><br>
+        </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

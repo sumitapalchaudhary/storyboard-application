@@ -1,3 +1,4 @@
+import { DatePipe } from "@angular/common";
 import { Injectable } from "@angular/core";
 import { Data } from "@angular/router";
 import { ChartDto, StoryBoardDto } from "../models/story-board.model";
@@ -9,7 +10,8 @@ export class TransformData{
 chartDataList: StoryBoardDto[] = [];
     constructor(
         private processJsonService: ProcessJsonService,
-        private utility: Utility
+        private utility: Utility,
+        private datepipe: DatePipe
     ) {}
 
     transformArraytoStoryBoardData(){
@@ -81,7 +83,7 @@ chartDataList: StoryBoardDto[] = [];
                 chartData.y = dateArray;
                 chartData.fillColor = this.setColor(label);
                 chartDataArray.push(chartData);
-                if (label == "Roadmap" || label == "EVA")
+                if (label == "Roadmap")
                 {
                     seriesData.push({
                     'x': chartData.x,
@@ -90,13 +92,19 @@ chartDataList: StoryBoardDto[] = [];
                         sb.duedate.getTime()
                     ],
                     'fillColor': chartData.fillColor,
+                    'id': sb.id,
+                    'key': sb.key,
+                    'issuetypename': sb.issuetypename,
+                    'labels': this.utility.convertArrayToString(sb.labels),
+                    'startdate': this.datepipe.transform(sb.startdate, "dd-MM-yyyy"),
+                    'duedate': this.datepipe.transform(sb.duedate, "dd-MM-yyyy"),
+                    'timeestimate': sb.timeestimate,
                     'summary': sb.summary,
-                    'key': sb.key
-                })
+                    'description': sb.description
+                });
             }
             });
         }
-        console.log(seriesData);
         return seriesData;
     }
 

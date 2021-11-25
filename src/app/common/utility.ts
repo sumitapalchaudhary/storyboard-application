@@ -28,4 +28,17 @@ export class Utility{
         let dayToWeeks = Math.floor(workDays/workDaysPerWeek)
         return dayToWeeks;
     }
+
+    convertArrayToString(stringArray: string[]): string{
+        let strValue: string = "";
+        stringArray.forEach(sa => {
+            if(stringArray[stringArray.length - 1] == sa){
+                strValue += sa;
+            }
+            else{
+                strValue += sa + ', ';
+            }
+        });
+        return strValue;
+    }
 }
