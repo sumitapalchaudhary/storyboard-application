@@ -15,6 +15,11 @@ To install the packages, run 'npm install'.
 To Run the application run 'ng serve' or 'npm run start'.
 
 
+Timeline is displayed for 3 labels.
+
 ![image](https://user-images.githubusercontent.com/30353316/143501204-961a1213-4f4a-4582-bb50-fd1deb64e654.png)
+
+
+On click of any task, more details will be displayed in a dialog box.
 
 ![image](https://user-images.githubusercontent.com/30353316/143501215-fa16188a-e2c2-495b-ada8-f4e6184c510a.png)
